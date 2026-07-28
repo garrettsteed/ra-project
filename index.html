@@ -180,18 +180,130 @@
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
                 
                 const promptText = `
-You are an expert Research Administrator. Review the attached Notice of Funding Opportunity (NOFO) / Request for Applications (RFA). 
-Your task is to generate a highly detailed and structured "Pre-Award Checklist" for a Principal Investigator (PI) and the research administration team.
+KNOWLEDGE BASE QUERY
 
-Please include:
-1. Basic Details: Funding agency, grant title, mechanism/opportunity number, and all critical deadlines (Letter of Intent, Full Application, Internal deadlines if implied).
-2. Formatting Rules: Font size, margins, spacing, and any specific system requirements (e.g., ASSIST, Workspace, Research.gov).
-3. Required Documents & Forms: Provide a clear, tabular or bulleted checklist of every required document (e.g., Project Summary, Research Strategy, Biosketches, Budget, Facilities). 
-   - For each document, list the specific page limits.
-   - For each document, list specific nuances or instructions mentioned in the RFA.
-4. Budget Rules: Cost-sharing requirements, indirect cost (F&A) limits, or salary caps.
+RFA FOA NOFO eligibility budget cost sharing F&A indirect cost rates allowable unallowable personnel effort submission deadlines compliance requirements Uniform Guidance
 
-Organize the output beautifully using Markdown headers, lists, and tables so it is easy to read.
+Recommended knowledge base: OMB Uniform Guidance (2 CFR 200)
+
+You are performing the complete extraction and consolidation task for a federal funding announcement (NOFO/RFA). Search every section of the attached document including the main body, appendices, footnotes, and sidebar callouts.
+
+Extract all details and render a single, well-formatted Markdown checklist for a sponsored-programs research administrator end-user.
+
+## CRITICAL — ALWAYS RENDER THE DELIVERABLE
+
+You MUST render the FULL Markdown deliverable structure (every section listed below), EVEN WHEN some fields are missing or sparse in the document.
+
+Substitution rules when a field is missing:
+- Required scalar fields: substitute the literal string "Not specified in the document".
+- Optional table cells: substitute "—" (em dash).
+- Empty arrays/lists: render "Not specified in the document", "Defers to federal defaults", or "None identified beyond standard federal requirements" as appropriate.
+
+## Required structure (in this exact order)
+
+# RFA Checklist: <rfa_title>
+
+**Sponsor:** <sponsor_name>
+**RFA ID / Number:** <rfa_id> / <rfa_number>
+**Program Code:** <program_code or "Not specified">
+**Announcement URL:** <announcement_url or "Not specified">
+**Opportunity Number:** <opportunity_number or "Not specified">
+**CFDA Number:** <cfda_number or "Not specified">
+
+---
+
+## DATES & DEADLINES
+
+A Markdown table with these three columns and chronologically sorted rows:
+
+| Deadline / Event | Date / Time | Notes |
+|---|---|---|
+
+---
+
+## ELIGIBILITY
+
+### Eligible Institutions
+
+Render each entry as a bulleted item with the type in **bold**. Add sub-bullets for subcategory, examples, and compliance requirements when populated.
+
+### Eligible Individuals
+
+Same bulleted shape — type in **bold** plus sub-bullets for criteria, compliance requirements, conditions when populated. Bold key limitations like **one nomination per institution** when applicable.
+
+---
+
+## AWARD INFORMATION
+
+This is the **sole location** for primary award parameters. Render as a definition-style list:
+
+- **Award Duration:** <award_duration>
+- **Amount per Award:** <amount_per_award>
+- **Anticipated Number of Awards:** <number_of_awards or "Not specified">
+- **Anticipated Award Date:** <anticipated_award_date or "Not specified">
+
+Do NOT include cost-sharing, F&A, or personnel-effort rules here.
+
+---
+
+## APPLICATION COMPONENTS
+
+### Required Components
+
+A Markdown table with these three columns:
+
+| Component Name | Description / Details | Special Requirements |
+|---|---|---|
+
+### Optional Components
+
+Same three-column table. If none, include a single row:
+
+| Not specified in this document | — | — |
+
+---
+
+## BUDGET REQUIREMENTS & POLICIES
+
+This is the **sole location** for detailed financial rules. Render as a bulleted list with bold labels:
+
+- **Funding Limits:** <funding_limits prose, or "Not specified">
+- **Cost Sharing:** <cost_sharing_status>
+    - Include cost_sharing_details as a natural-language sub-bullet paragraph when required or voluntary.
+- **F&A / Indirect Cost Policy:** <fa_policy prose, or "Not specified">
+- **Allowable Costs:** bulleted list of allowable costs, or "Defers to federal defaults"
+- **Unallowable Costs:** bulleted list of unallowable costs, or "None explicitly enumerated"
+- **Personnel Effort:** <personnel_effort prose, or "Not specified">
+- **Other Considerations:** <other_considerations prose, or "—">
+
+---
+
+## SUBMISSION DETAILS
+
+Render submission details (portal, format, mechanics) as a single coherent paragraph. If missing, state "Not specified in the document."
+
+---
+
+## SPECIAL REQUIREMENTS
+
+Render unique special requirements as a bulleted list. If empty, state "None identified beyond standard federal requirements."
+
+---
+
+## IMPORTANT NOTES
+
+Synthesize 0–5 critical warnings or pitfalls a reviewer would otherwise miss as a bulleted list starting with a bold lead. If none, state "No critical reviewer warnings beyond what appears in the sections above."
+
+---
+
+## Placement & Formatting Rules
+
+1. Award amount and duration appear ONLY in AWARD INFORMATION.
+2. Detailed financial rules appear ONLY in BUDGET REQUIREMENTS & POLICIES.
+3. Per-component formatting rules (page limits, fonts) appear ONLY in the Special Requirements column of APPLICATION COMPONENTS.
+4. Submission mechanics appear ONLY in SUBMISSION DETAILS.
+5. Preserve sponsor's monetary formatting verbatim ($1,234,567, 30% MTDC) and exact date/time zones.
+6. Emit directly formatted Markdown — no JSON wrappers, no surrounding code fences, no extra preamble.
 `;
 
                 const payload = {
